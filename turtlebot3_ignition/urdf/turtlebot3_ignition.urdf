@@ -84,7 +84,7 @@
     <gazebo>
       <!-- Joint state publisher -->
       <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-        <parameters>$(find turtlebot3_ignition)/config/turtlebot3_burger.yaml</parameters>
+        <parameters>$(find turtlebot3_ignition)/config/turtlebot3_waffle.yaml</parameters>
       </plugin>
     </gazebo>
 

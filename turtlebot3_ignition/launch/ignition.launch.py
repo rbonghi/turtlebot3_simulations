@@ -114,8 +114,8 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([launch_file_dir, '/control.launch.py']),
             launch_arguments={'use_sim_time': use_sim_time}.items(),
         ),
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([launch_file_dir, '/rviz.launch.py']),
-            launch_arguments={'use_sim_time': use_sim_time}.items(),
-        ),
+        #IncludeLaunchDescription(
+        #    PythonLaunchDescriptionSource([launch_file_dir, '/rviz.launch.py']),
+        #    launch_arguments={'use_sim_time': use_sim_time}.items(),
+        #),
     ])

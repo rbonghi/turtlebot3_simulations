@@ -19,49 +19,33 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.actions import ExecuteProcess
 from launch_ros.actions import Node
 
 TURTLEBOT3_MODEL = os.environ['TURTLEBOT3_MODEL']
 
 def generate_launch_description():
-    turtlebot3_ignition_path = get_package_share_directory('turtlebot3_ignition')
-    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
-
-    control_params_file = PathJoinSubstitution(
-        [turtlebot3_ignition_path,
-         'config', 'turtlebot3_' + TURTLEBOT3_MODEL + '.yaml'])
-
-    load_joint_state_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
-        parameters=[{'use_sim_time': use_sim_time}]
+    load_joint_state_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '-c', '/controller_manager', '--set-state', 'start',
+             'joint_state_broadcaster'],
+        output='screen'
     )
 
-    load_diff_drive_base_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['diff_drive_base_controller', '--controller-manager', '/controller_manager'],
-        parameters=[control_params_file, {'use_sim_time': use_sim_time}],
-        output={
-            'stdout': 'screen',
-            'stderr': 'screen',
-        },
+    load_joint_trajectory_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '-c', '/controller_manager', '--set-state', 'start',
+             'diff_drive_base_controller'],
+        output='screen'
     )
 
     # Ensure diffdrive_controller_node starts after load_joint_state_controller
     diff_drive_base_controller_callback = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=load_joint_state_controller,
-            on_exit=[load_diff_drive_base_controller],
+            on_exit=[load_joint_trajectory_controller],
         )
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument(
-            'use_sim_time',
-            default_value='true',
-            description='Use simulation (Gazebo) clock if true'),
         load_joint_state_controller,
         diff_drive_base_controller_callback
     ])

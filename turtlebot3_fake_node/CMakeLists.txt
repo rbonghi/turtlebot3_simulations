@@ -53,7 +53,7 @@ install(TARGETS ${EXEC_NAME}
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(DIRECTORY launch param
+install(DIRECTORY launch param rviz
   DESTINATION share/${PROJECT_NAME}
 )
 
